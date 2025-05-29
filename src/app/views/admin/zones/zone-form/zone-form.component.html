@@ -1,0 +1,38 @@
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <h2>{{ editMode ? 'Editar Zona' : 'Registrar Nueva Zona' }}</h2>
+
+    <div class="form-group">
+      <label for="name">Nombre de la Zona</label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        placeholder="Ej: Rinconada De Conta"
+      />
+      <div class="error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+        Solo se permiten letras y espacios.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <input
+        id="description"
+        type="text"
+        formControlName="description"
+        placeholder="Ej: Sede Principal del JASS"
+      />
+      <div class="error" *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+        Solo se permiten letras y espacios.
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" [disabled]="form.invalid">
+        {{ editMode ? 'Actualizar Zona' : 'Registrar Zona' }}
+      </button>
+      <button type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+</div>

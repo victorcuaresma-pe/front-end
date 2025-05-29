@@ -1,0 +1,53 @@
+<h2 class="titulo-tarifas">
+  {{ mostrarInactivas ? 'Tarifas Inactivas' : 'Tarifas Activas' }}
+</h2>
+
+<div class="actions" style="text-align: right; margin-bottom: 1rem;">
+  <button *ngIf="!mostrarInactivas" (click)="abrirModal()">➕ Agregar Tarifa</button>
+  <button (click)="alternarTarifas()">
+    {{ mostrarInactivas ? '🔄 Ver Activas' : '🗂️ Ver Inactivas' }}
+  </button>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>ZONA</th>
+      <th>MONTO</th>
+      <th>DESCRIPCIÓN</th>
+      <th>TIPO DE TARIFA</th>
+      <th>FECHA DE INICIO</th>
+      <th>FECHA DE FIN</th>
+      <th>FECHA DE REGISTRO</th>
+      <th>ACCIONES</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let rate of rates; trackBy: trackByRateId">
+      <td>{{ rate.zoneName }}</td>
+      <td>{{ rate.amount }}</td>
+      <td>{{ rate.description }}</td>
+      <td>{{ rate.rateType }}</td>
+      <td>{{ formatDate(rate.startDate) }}</td>
+      <td>{{ formatDate(rate.endDate) }}</td>
+      <td>{{ formatDate(rate.dateRecord) }}</td>
+      <td>
+        <button *ngIf="!mostrarInactivas" (click)="onEdit(rate)" title="Editar">✏️</button>
+        <button *ngIf="!mostrarInactivas" (click)="onDesactivate(rate)" title="Eliminar">🗑️</button>
+        <button *ngIf="mostrarInactivas" (click)="onActivate(rate)" title="Reactivar">✅ Reactivar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="mostrarModal">
+  <div class="modal">
+    <h3>{{ editMode ? 'Editar Tarifa' : 'Registrar Nueva Tarifa' }}</h3>
+    <app-rate-form
+      [editMode]="editMode"
+      [rateId]="editingRateId"
+      (guardado)="recargarLista()"
+      (cerrar)="cerrarModal()"
+    ></app-rate-form>
+  </div>
+</div>

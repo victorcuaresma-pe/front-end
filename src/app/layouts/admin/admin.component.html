@@ -1,0 +1,36 @@
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo">
+        <h2>Sistema Jass</h2>
+        <p class="subtitle">Servicio de programación de distribución de agua</p>
+        <p class="description">
+          Gestiona la programación de la distribución de agua por zonas, calles y sectores.
+        </p>
+      </div>
+      <nav class="menu">
+        <a routerLink="/admin/dashboard" routerLinkActive="active">📊 Dashboard</a>
+        <a routerLink="/admin/zones" routerLinkActive="active">🗺️ Zonas</a>
+        <a routerLink="/admin/streets" routerLinkActive="active">🚧 Calles</a>
+        <a routerLink="/admin/rates" routerLinkActive="active">💧 Tarifas</a>
+      </nav>
+    </div>
+
+    <!-- Parte inferior -->
+    <div class="sidebar-footer">
+      <a 
+        href="https://drive.google.com/file/d/1AHTBmE6dhxQEjAcNK_y4s1pa9SJT8Cxq/view?usp=sharing" 
+        target="_blank"
+      >
+        <button>📘 Guía de usuario</button>
+      </a>
+      <button (click)="login()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- Contenido -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,105 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff;
+}
+
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  max-width: 900px;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 30px;
+}
+
+.login-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-form {
+  flex: 1;
+  padding: 20px;
+}
+
+.logo {
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 32px;
+  color: #00325c;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 16px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  background-color: #002b5c;
+  color: white;
+  border: none;
+  padding: 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #004080;
+}
+
+.forgot-password {
+  font-size: 10px;
+  color: #555;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.login-image {
+  flex: 1;
+  text-align: center;
+}
+
+.login-image img {
+  max-width: 100%;
+  height: auto;
+}
