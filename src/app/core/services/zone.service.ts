@@ -25,7 +25,7 @@ export interface ApiResponse<T> { // Respuesta genérica de la API
 
 @Injectable({ providedIn: 'root' }) // Servicio inyectable en toda la app
 export class ZoneService {
-  private apiUrl = 'https://supreme-winner-97wpr5p54ggqc94x6-8080.app.github.dev/api/v1/zonas'; // URL base de zonas
+  private apiUrl = 'https://musical-system-pvx67wgrrxv2657r-8080.app.github.dev/api/v1/zonas'; // URL base de zonas
 
   constructor(private http: HttpClient) {} // Inyección de HttpClient
 

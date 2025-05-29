@@ -43,7 +43,7 @@ export interface ApiResponse<T> {
 })
 export class RateService {
   // URL base de la API de tarifas
-  private apiUrl = 'https://supreme-winner-97wpr5p54ggqc94x6-8080.app.github.dev/api/v1/tarifas';
+  private apiUrl = 'https://musical-system-pvx67wgrrxv2657r-8080.app.github.dev/api/v1/tarifas';
 
   constructor(private http: HttpClient) {} // Inyección del cliente HTTP
 

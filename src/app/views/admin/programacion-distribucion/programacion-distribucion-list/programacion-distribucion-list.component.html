@@ -1,0 +1,100 @@
+<div class="programacion-list-container">
+  <div class="header">
+    <h1>Programaciones de Distribución</h1>
+    <div class="header-actions">
+      <button 
+        class="btn btn-primary" 
+        (click)="abrirModal()"
+        [disabled]="cargando">
+        + Nueva Programación
+      </button>
+      <button 
+        class="btn btn-secondary" 
+        (click)="alternarProgramaciones()"
+        [disabled]="cargando">
+        {{ mostrarInactivas ? 'Ver Activas' : 'Ver Inactivas' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div *ngIf="cargando" class="loading">
+      <p>Cargando programaciones...</p>
+    </div>
+
+    <div *ngIf="!cargando && programaciones.length === 0" class="no-data">
+      <p>{{ mostrarInactivas ? 'No hay programaciones inactivas' : 'No hay programaciones activas' }}</p>
+    </div>
+
+    <div *ngIf="!cargando && programaciones.length > 0" class="table-container">
+      <table class="programaciones-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Zona ID</th>
+            <th>Zona Nombre</th>
+            <th>Estado</th>
+            <th>Fecha Registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let prog of programaciones; trackBy: trackById">
+            <td>{{ formatDate(prog.fecha) }}</td>
+            <td>{{ prog.zonaId }}</td>
+            <td>{{ prog.zonaNombre }}</td>
+            <td>
+              <span [class]="getEstadoClass(prog.estado)">
+                {{ prog.estado }}
+              </span>
+            </td>
+            <td>{{ formatDate(prog.fechaRegistro) }}</td>
+            <td class="actions">
+              <button 
+                class="btn btn-sm btn-info" 
+                (click)="onEdit(prog)"
+                [disabled]="cargando">
+                Editar
+              </button>
+              
+              <button 
+                *ngIf="prog.estado === 'ACTIVO'" 
+                class="btn btn-sm btn-warning" 
+                (click)="onDesactivate(prog)"
+                [disabled]="cargando">
+                Desactivar
+              </button>
+              
+              <button 
+                *ngIf="prog.estado === 'INACTIVO'" 
+                class="btn btn-sm btn-success" 
+                (click)="onActivate(prog)"
+                [disabled]="cargando">
+                Activar
+              </button>
+              
+              <button 
+                class="btn btn-sm btn-danger" 
+                (click)="onDelete(prog)"
+                [disabled]="cargando">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <app-programacion-distribucion-form
+        [editMode]="editMode"
+        [programacionId]="editingId"
+        (guardado)="cerrarModal()"
+        (cerrar)="cerrarModal()">
+      </app-programacion-distribucion-form>
+    </div>
+  </div>
+</div>

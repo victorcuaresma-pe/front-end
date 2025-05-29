@@ -29,6 +29,12 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./views/admin/rates/rates.routes').then(m => m.STREET_ROUTES)
       },
+      {
+        path: 'programacion-distribucion',
+        loadChildren: () =>
+          import('./views/admin/programacion-distribucion/programacion-distribucion.routes')
+            .then(m => m.PROGRAMACION_DISTRIBUCION_ROUTES)
+      },
       { path: '', redirectTo: 'zones', pathMatch: 'full' }
     ]
   },

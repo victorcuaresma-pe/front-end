@@ -25,7 +25,7 @@ export interface ApiResponse<T> { // Estructura de respuesta API
   providedIn: 'root' // Servicio disponible en toda la app
 })
 export class StreetService {
-  private apiUrl = 'https://supreme-winner-97wpr5p54ggqc94x6-8080.app.github.dev/api/v1/calles'; // URL base
+  private apiUrl = 'https://musical-system-pvx67wgrrxv2657r-8080.app.github.dev/api/v1/calles'; // URL base
 
   constructor(private http: HttpClient) {} // Inyecta HttpClient
 
