@@ -30,6 +30,11 @@ export const routes: Routes = [
           import('./views/admin/rates/rates.routes').then(m => m.STREET_ROUTES)
       },
       {
+        path: 'incidence',
+        loadComponent: () =>
+          import('./views/admin/incidencias/incidencias.component').then(m => m.IncidenciasComponent)
+      },
+      {
         path: 'programacion-distribucion',
         loadChildren: () =>
           import('./views/admin/programacion-distribucion/programacion-distribucion.routes')
