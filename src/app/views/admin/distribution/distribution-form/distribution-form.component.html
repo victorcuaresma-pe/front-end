@@ -1,0 +1,55 @@
+<div class="formulario-programacion">
+  <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+    <h2>{{ editMode ? 'Editar Programación' : 'Registrar Nueva Programación' }}</h2>
+
+    <div class="form-group">
+      <label for="zona_nombre">Zona:</label>
+      <input id="zona_nombre" type="text" formControlName="zona_nombre" />
+      <div class="error" *ngIf="form.get('zona_nombre')?.invalid && form.get('zona_nombre')?.touched">
+        EL CAMPO ES OBLIGATORIO
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="calle_nombre">Calle:</label>
+      <input id="calle_nombre" type="text" formControlName="calle_nombre" />
+      <div class="error" *ngIf="form.get('calle_nombre')?.invalid && form.get('calle_nombre')?.touched">
+        EL CAMPO ES OBLIGATORIO
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="hora_inicio">Hora Inicio:</label>
+      <input id="hora_inicio" type="time" formControlName="hora_inicio" />
+    </div>
+
+    <div class="form-group">
+      <label for="hora_fin">Hora Fin:</label>
+      <input id="hora_fin" type="time" formControlName="hora_fin" />
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input type="checkbox" formControlName="es_diario" />
+        ¿Es Diario?
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="responsable_nombre">Responsable:</label>
+      <input id="responsable_nombre" type="text" formControlName="responsable_nombre" />
+    </div>
+
+    <div class="form-group">
+      <label for="observaciones">Observaciones:</label>
+      <textarea id="observaciones" formControlName="observaciones"></textarea>
+    </div>
+
+    <div class="form-group">
+      <button type="submit" [disabled]="form.invalid">
+        {{ editMode ? 'Actualizar' : 'Guardar' }}
+      </button>
+      <button type="button" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+</div>

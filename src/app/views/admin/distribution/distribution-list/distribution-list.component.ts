@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProgramacionDistribucion, ProgramacionDistribucionService, ApiResponse } from '../../../../core/services/programacion-distribucion.service';
-import { ProgramacionDistribucionFormComponent } from '../programacion-distribucion-form/programacion-distribucion-form.component';
+import { ProgramacionDistribucion, ProgramacionDistribucionService, ApiResponse } from '../../../../core/services/distribution.service';
+import { ProgramacionDistribucionFormComponent } from '../distribution-form/distribution-form.component';
 
 @Component({
-  selector: 'app-programacion-distribucion-list',
+  selector: 'app-distribution-list',
   standalone: true,
-  imports: [CommonModule, ProgramacionDistribucionFormComponent],
-  templateUrl: './programacion-distribucion-list.component.html',
-  styleUrls: ['./programacion-distribucion-list.component.css']
+  imports: [CommonModule, ProgramacionDistribucionFormComponent], // Added the form component to imports
+  templateUrl: './distribution-list.component.html',
+  styleUrls: ['./distribution-list.component.css']
 })
 export class ProgramacionDistribucionListComponent implements OnInit {
   programaciones: ProgramacionDistribucion[] = [];

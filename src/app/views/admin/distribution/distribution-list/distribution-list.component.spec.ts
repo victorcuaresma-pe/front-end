@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ProgramacionDistribucionListComponent } from './programacion-distribucion-list.component';
+import { ProgramacionDistribucionListComponent } from './distribution-list.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ProgramacionDistribucionListComponent', () => {

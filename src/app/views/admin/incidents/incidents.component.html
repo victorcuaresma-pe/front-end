@@ -1,0 +1,570 @@
+<div class="incidencias-container">
+  <!-- Header -->
+  <div class="header">
+    <h2>Gestión de Incidencias</h2>
+    <button class="btn btn-primary" (click)="mostrarFormularioNuevo()">
+      Nueva Incidencia
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros">
+    <button 
+      class="btn" 
+      [class.btn-active]="filtroActivo === 'todos'"
+      (click)="cambiarFiltro('todos')">
+      Todas
+    </button>
+    <button 
+      class="btn" 
+      [class.btn-active]="filtroActivo === 'activos'"
+      (click)="cambiarFiltro('activos')">
+      Activas
+    </button>
+    <button 
+      class="btn" 
+      [class.btn-active]="filtroActivo === 'inactivos'"
+      (click)="cambiarFiltro('inactivos')">
+      Inactivas
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    Cargando incidencias...
+  </div>
+
+  <!-- Lista de Incidencias -->
+  <div *ngIf="!loading && !mostrarFormulario" class="incidencias-lista">
+    <div *ngFor="let incidencia of incidencias" class="incidencia-card">
+      <div class="card-header">
+        <h3>{{ incidencia.tipoIncidencia }}</h3>
+        <div class="badges">
+          <span class="badge" [ngClass]="getClasePrioridad(incidencia.prioridad)">
+            {{ incidencia.prioridad }}
+          </span>
+          <span class="badge" [ngClass]="getClaseEstado(incidencia.estado)">
+            {{ incidencia.estado }}
+          </span>
+          <span class="badge" [ngClass]="incidencia.activo ? 'badge-activo' : 'badge-inactivo'">
+            {{ incidencia.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <p><strong>Descripción:</strong> {{ incidencia.descripcion }}</p>
+        <p><strong>Zona:</strong> {{ incidencia.zonaNombre }}</p>
+        <p><strong>Fecha Inicio:</strong> {{ formatearFecha(incidencia.fechaInicio) }}</p>
+        <p><strong>Fecha Est. Solución:</strong> {{ formatearFecha(incidencia.fechaEstimadaSolucion) }}</p>
+        <p><strong>Reportado por:</strong> {{ incidencia.reportadoPor }}</p>
+        <p><strong>Asignado a:</strong> {{ incidencia.asignadoA }}</p>
+        
+        <div *ngIf="incidencia.callesAfectadas.length > 0">
+          <strong>Calles Afectadas:</strong>
+          <ul>
+            <li *ngFor="let calle of incidencia.callesAfectadas">
+              {{ calle.calleNombre }}
+            </li>
+          </ul>
+        </div>
+
+        <div *ngIf="incidencia.materialesRequeridos.length > 0">
+          <strong>Materiales Requeridos:</strong>
+          <ul>
+            <li *ngFor="let material of incidencia.materialesRequeridos">
+              {{ material.nombre }} - {{ material.cantidad }} {{ material.unidad }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-secondary" (click)="editarIncidencia(incidencia)">
+          Editar
+        </button>
+        <button class="btn btn-warning" (click)="obtenerPorId(incidencia.id)">
+          Ver Detalles
+        </button>
+        
+        <button 
+          *ngIf="incidencia.activo" 
+          class="btn btn-orange" 
+          (click)="desactivarIncidencia(incidencia.id)">
+          Desactivar
+        </button>
+        
+        <button 
+          *ngIf="!incidencia.activo" 
+          class="btn btn-success" 
+          (click)="activarIncidencia(incidencia.id)">
+          Activar
+        </button>
+        
+        <button class="btn btn-danger" (click)="eliminarLogico(incidencia.id)">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario Modal Mejorado con Validaciones -->
+<div *ngIf="mostrarFormulario" class="formulario-container">
+  <div class="formulario-modal">
+    <div class="formulario-header">
+      <h3>{{ modoEdicion ? 'Editar Incidencia' : 'Nueva Incidencia' }}</h3>
+      <button class="btn-close" (click)="cancelarFormulario()">×</button>
+    </div>
+
+    <form #incidenciaForm="ngForm" class="formulario" (ngSubmit)="guardarIncidencia()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Incidencia: <span class="required">*</span></label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevaIncidencia.tipoIncidencia" 
+            name="tipoIncidencia"
+            #tipoIncidencia="ngModel"
+            placeholder="Ingrese el tipo de incidencia"
+            required
+            minlength="3"
+            maxlength="100"
+            [class.error]="tipoIncidencia.invalid && tipoIncidencia.touched">
+          <div class="error-message" *ngIf="tipoIncidencia.invalid && tipoIncidencia.touched">
+            <span *ngIf="tipoIncidencia.errors?.['required']">El tipo de incidencia es obligatorio</span>
+            <span *ngIf="tipoIncidencia.errors?.['minlength']">Debe tener al menos 3 caracteres</span>
+            <span *ngIf="tipoIncidencia.errors?.['maxlength']">No puede exceder 100 caracteres</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Zona ID: <span class="required">*</span></label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevaIncidencia.zonaId" 
+            name="zonaId"
+            #zonaId="ngModel"
+            placeholder="ID de la zona"
+            required
+            pattern="^[A-Za-z0-9]+$"
+            maxlength="20"
+            [class.error]="zonaId.invalid && zonaId.touched">
+          <div class="error-message" *ngIf="zonaId.invalid && zonaId.touched">
+            <span *ngIf="zonaId.errors?.['required']">El ID de zona es obligatorio</span>
+            <span *ngIf="zonaId.errors?.['pattern']">Solo se permiten letras y números</span>
+            <span *ngIf="zonaId.errors?.['maxlength']">No puede exceder 20 caracteres</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Zona Nombre: <span class="required">*</span></label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevaIncidencia.zonaNombre" 
+            name="zonaNombre"
+            #zonaNombre="ngModel"
+            placeholder="Nombre de la zona"
+            required
+            minlength="2"
+            maxlength="50"
+            [class.error]="zonaNombre.invalid && zonaNombre.touched">
+          <div class="error-message" *ngIf="zonaNombre.invalid && zonaNombre.touched">
+            <span *ngIf="zonaNombre.errors?.['required']">El nombre de zona es obligatorio</span>
+            <span *ngIf="zonaNombre.errors?.['minlength']">Debe tener al menos 2 caracteres</span>
+            <span *ngIf="zonaNombre.errors?.['maxlength']">No puede exceder 50 caracteres</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Estado: <span class="required">*</span></label>
+          <select 
+            [(ngModel)]="nuevaIncidencia.estado" 
+            name="estado"
+            #estado="ngModel"
+            required
+            [class.error]="estado.invalid && estado.touched">
+            <option value="">Seleccione un estado</option>
+            <option value="PENDIENTE">Pendiente</option>
+            <option value="EN_PROCESO">En Proceso</option>
+            <option value="COMPLETADO">Completado</option>
+            <option value="CANCELADO">Cancelado</option>
+          </select>
+          <div class="error-message" *ngIf="estado.invalid && estado.touched">
+            <span *ngIf="estado.errors?.['required']">Debe seleccionar un estado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Prioridad: <span class="required">*</span></label>
+          <select 
+            [(ngModel)]="nuevaIncidencia.prioridad" 
+            name="prioridad"
+            #prioridad="ngModel"
+            required
+            [class.error]="prioridad.invalid && prioridad.touched">
+            <option value="">Seleccione una prioridad</option>
+            <option value="BAJA">Baja</option>
+            <option value="MEDIA">Media</option>
+            <option value="ALTA">Alta</option>
+          </select>
+          <div class="error-message" *ngIf="prioridad.invalid && prioridad.touched">
+            <span *ngIf="prioridad.errors?.['required']">Debe seleccionar una prioridad</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Fecha Inicio: <span class="required">*</span></label>
+          <input 
+            type="datetime-local" 
+            [(ngModel)]="nuevaIncidencia.fechaInicio" 
+            name="fechaInicio"
+            #fechaInicio="ngModel"
+            required
+            [class.error]="fechaInicio.invalid && fechaInicio.touched">
+          <div class="error-message" *ngIf="fechaInicio.invalid && fechaInicio.touched">
+            <span *ngIf="fechaInicio.errors?.['required']">La fecha de inicio es obligatoria</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha Estimada Solución: <span class="required">*</span></label>
+          <input 
+            type="datetime-local" 
+            [(ngModel)]="nuevaIncidencia.fechaEstimadaSolucion" 
+            name="fechaEstimadaSolucion"
+            #fechaEstimadaSolucion="ngModel"
+            required
+            [class.error]="fechaEstimadaSolucion.invalid && fechaEstimadaSolucion.touched">
+          <div class="error-message" *ngIf="fechaEstimadaSolucion.invalid && fechaEstimadaSolucion.touched">
+            <span *ngIf="fechaEstimadaSolucion.errors?.['required']">La fecha estimada es obligatoria</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Fecha Solución Real:</label>
+          <input 
+            type="datetime-local" 
+            [(ngModel)]="nuevaIncidencia.fechaSolucionReal" 
+            name="fechaSolucionReal">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Descripción: <span class="required">*</span></label>
+        <textarea 
+          [(ngModel)]="nuevaIncidencia.descripcion" 
+          name="descripcion"
+          #descripcion="ngModel"
+          rows="3"
+          placeholder="Describa detalladamente la incidencia"
+          required
+          minlength="10"
+          maxlength="500"
+          [class.error]="descripcion.invalid && descripcion.touched"></textarea>
+        <div class="error-message" *ngIf="descripcion.invalid && descripcion.touched">
+          <span *ngIf="descripcion.errors?.['required']">La descripción es obligatoria</span>
+          <span *ngIf="descripcion.errors?.['minlength']">Debe tener al menos 10 caracteres</span>
+          <span *ngIf="descripcion.errors?.['maxlength']">No puede exceder 500 caracteres</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Reportado por: <span class="required">*</span></label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevaIncidencia.reportadoPor" 
+            name="reportadoPor"
+            #reportadoPor="ngModel"
+            placeholder="Nombre de quien reporta"
+            required
+            minlength="2"
+            maxlength="100"
+            pattern="^[a-zA-ZÀ-ÿ\s]+$"
+            [class.error]="reportadoPor.invalid && reportadoPor.touched">
+          <div class="error-message" *ngIf="reportadoPor.invalid && reportadoPor.touched">
+            <span *ngIf="reportadoPor.errors?.['required']">Este campo es obligatorio</span>
+            <span *ngIf="reportadoPor.errors?.['minlength']">Debe tener al menos 2 caracteres</span>
+            <span *ngIf="reportadoPor.errors?.['maxlength']">No puede exceder 100 caracteres</span>
+            <span *ngIf="reportadoPor.errors?.['pattern']">Solo se permiten letras y espacios</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Asignado a: <span class="required">*</span></label>
+          <input 
+            type="text" 
+            [(ngModel)]="nuevaIncidencia.asignadoA" 
+            name="asignadoA"
+            #asignadoA="ngModel"
+            placeholder="Persona asignada"
+            required
+            minlength="2"
+            maxlength="100"
+            pattern="^[a-zA-ZÀ-ÿ\s]+$"
+            [class.error]="asignadoA.invalid && asignadoA.touched">
+          <div class="error-message" *ngIf="asignadoA.invalid && asignadoA.touched">
+            <span *ngIf="asignadoA.errors?.['required']">Este campo es obligatorio</span>
+            <span *ngIf="asignadoA.errors?.['minlength']">Debe tener al menos 2 caracteres</span>
+            <span *ngIf="asignadoA.errors?.['maxlength']">No puede exceder 100 caracteres</span>
+            <span *ngIf="asignadoA.errors?.['pattern']">Solo se permiten letras y espacios</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Observaciones:</label>
+        <textarea 
+          [(ngModel)]="nuevaIncidencia.observaciones" 
+          name="observaciones"
+          #observaciones="ngModel"
+          rows="2"
+          placeholder="Observaciones adicionales (opcional)"
+          maxlength="300"
+          [class.error]="observaciones.invalid && observaciones.touched"></textarea>
+        <div class="error-message" *ngIf="observaciones.invalid && observaciones.touched">
+          <span *ngIf="observaciones.errors?.['maxlength']">No puede exceder 300 caracteres</span>
+        </div>
+      </div>
+
+      <!-- Calles Afectadas -->
+      <div class="subsection">
+        <div class="subsection-header">
+          <h4>Calles Afectadas</h4>
+          <button type="button" class="btn btn-primary btn-sm" (click)="agregarCalleAfectada()">
+            + Agregar Calle
+          </button>
+        </div>
+        
+        <div *ngFor="let calle of nuevaIncidencia.callesAfectadas; let i = index" class="dynamic-item">
+          <div class="form-row">
+            <div class="form-group">
+              <label>ID de Calle:</label>
+              <input 
+                type="text" 
+                [(ngModel)]="calle.calleId" 
+                [name]="'calleId_' + i"
+                #calleIdRef="ngModel"
+                placeholder="ID de la calle"
+                pattern="^[A-Za-z0-9]+$"
+                maxlength="20"
+                [class.error]="calleIdRef.invalid && calleIdRef.touched">
+              <div class="error-message" *ngIf="calleIdRef.invalid && calleIdRef.touched">
+                <span *ngIf="calleIdRef.errors?.['pattern']">Solo se permiten letras y números</span>
+                <span *ngIf="calleIdRef.errors?.['maxlength']">No puede exceder 20 caracteres</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Nombre de Calle:</label>
+              <input 
+                type="text" 
+                [(ngModel)]="calle.calleNombre" 
+                [name]="'calleNombre_' + i"
+                #calleNombreRef="ngModel"
+                placeholder="Nombre de la calle"
+                minlength="2"
+                maxlength="100"
+                [class.error]="calleNombreRef.invalid && calleNombreRef.touched">
+              <div class="error-message" *ngIf="calleNombreRef.invalid && calleNombreRef.touched">
+                <span *ngIf="calleNombreRef.errors?.['minlength']">Debe tener al menos 2 caracteres</span>
+                <span *ngIf="calleNombreRef.errors?.['maxlength']">No puede exceder 100 caracteres</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-danger btn-sm" (click)="eliminarCalleAfectada(i)">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="nuevaIncidencia.callesAfectadas.length === 0" style="text-align: center; color: #6c757d; padding: 20px;">
+          No hay calles afectadas agregadas
+        </div>
+      </div>
+
+      <!-- Materiales Requeridos -->
+      <div class="subsection">
+        <div class="subsection-header">
+          <h4>Materiales Requeridos</h4>
+          <button type="button" class="btn btn-primary btn-sm" (click)="agregarMaterialRequerido()">
+            + Agregar Material
+          </button>
+        </div>
+        
+        <div *ngFor="let material of nuevaIncidencia.materialesRequeridos; let i = index" class="dynamic-item">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre del Material:</label>
+              <input 
+                type="text" 
+                [(ngModel)]="material.nombre" 
+                [name]="'materialNombre_' + i"
+                #materialNombreRef="ngModel"
+                placeholder="Nombre del material"
+                minlength="2"
+                maxlength="100"
+                [class.error]="materialNombreRef.invalid && materialNombreRef.touched">
+              <div class="error-message" *ngIf="materialNombreRef.invalid && materialNombreRef.touched">
+                <span *ngIf="materialNombreRef.errors?.['minlength']">Debe tener al menos 2 caracteres</span>
+                <span *ngIf="materialNombreRef.errors?.['maxlength']">No puede exceder 100 caracteres</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Cantidad:</label>
+              <input 
+                type="number" 
+                [(ngModel)]="material.cantidad" 
+                [name]="'materialCantidad_' + i"
+                #materialCantidadRef="ngModel"
+                placeholder="Cantidad"
+                min="1"
+                max="99999"
+                step="1"
+                [class.error]="materialCantidadRef.invalid && materialCantidadRef.touched">
+              <div class="error-message" *ngIf="materialCantidadRef.invalid && materialCantidadRef.touched">
+                <span *ngIf="materialCantidadRef.errors?.['min']">La cantidad debe ser mayor a 0</span>
+                <span *ngIf="materialCantidadRef.errors?.['max']">La cantidad no puede exceder 99999</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Unidad:</label>
+              <input 
+                type="text" 
+                [(ngModel)]="material.unidad" 
+                [name]="'materialUnidad_' + i"
+                #materialUnidadRef="ngModel"
+                placeholder="Unidad (ej: kg, m, piezas)"
+                minlength="1"
+                maxlength="20"
+                [class.error]="materialUnidadRef.invalid && materialUnidadRef.touched">
+              <div class="error-message" *ngIf="materialUnidadRef.invalid && materialUnidadRef.touched">
+                <span *ngIf="materialUnidadRef.errors?.['minlength']">Debe especificar la unidad</span>
+                <span *ngIf="materialUnidadRef.errors?.['maxlength']">No puede exceder 20 caracteres</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-danger btn-sm" (click)="eliminarMaterialRequerido(i)">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="nuevaIncidencia.materialesRequeridos.length === 0" style="text-align: center; color: #6c757d; padding: 20px;">
+          No hay materiales requeridos agregados
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelarFormulario()">
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="incidenciaForm.invalid">
+          {{ modoEdicion ? 'Actualizar' : 'Crear' }} Incidencia
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+  <!-- Detalle de Incidencia Seleccionada -->
+  <div *ngIf="incidenciaSeleccionada && !mostrarFormulario" class="detalle-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detalle de Incidencia</h3>
+        <button class="btn btn-close" (click)="incidenciaSeleccionada = null">×</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>ID:</strong> {{ incidenciaSeleccionada.id }}</p>
+        <p><strong>Tipo:</strong> {{ incidenciaSeleccionada.tipoIncidencia }}</p>
+        <p><strong>Descripción:</strong> {{ incidenciaSeleccionada.descripcion }}</p>
+        <p><strong>Zona:</strong> {{ incidenciaSeleccionada.zonaNombre }}</p>
+        <p><strong>Estado:</strong> {{ incidenciaSeleccionada.estado }}</p>
+        <p><strong>Prioridad:</strong> {{ incidenciaSeleccionada.prioridad }}</p>
+        <p><strong>Fecha Registro:</strong> {{ formatearFecha(incidenciaSeleccionada.fechaRegistro) }}</p>
+        <p><strong>Notificado:</strong> {{ incidenciaSeleccionada.notificado ? 'Sí' : 'No' }}</p>
+        
+        <div *ngIf="incidenciaSeleccionada.actualizaciones.length > 0">
+          <h4>Actualizaciones:</h4>
+          <div *ngFor="let actualizacion of incidenciaSeleccionada.actualizaciones" class="actualizacion">
+            <p><strong>Fecha:</strong> {{ formatearFecha(actualizacion.fecha) }}</p>
+            <p><strong>Estado:</strong> {{ actualizacion.estado }}</p>
+            <p><strong>Descripción:</strong> {{ actualizacion.descripcion }}</p>
+            <p><strong>Usuario:</strong> {{ actualizacion.usuarioId }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos para validaciones */
+.required {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.error {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.error-message span {
+  display: block;
+  margin-bottom: 0.1rem;
+}
+
+/* Deshabilitar botón cuando el formulario es inválido */
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Estilos adicionales para mejorar la apariencia */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: 0;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>

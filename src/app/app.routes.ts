@@ -32,12 +32,12 @@ export const routes: Routes = [
       {
         path: 'incidence',
         loadComponent: () =>
-          import('./views/admin/incidencias/incidencias.component').then(m => m.IncidenciasComponent)
+          import('./views/admin/incidents/incidents.component').then(m => m.IncidenciasComponent)
       },
       {
-        path: 'programacion-distribucion',
+        path: 'distribution',
         loadChildren: () =>
-          import('./views/admin/programacion-distribucion/programacion-distribucion.routes')
+          import('./views/admin/distribution/distribution.routes')
             .then(m => m.PROGRAMACION_DISTRIBUCION_ROUTES)
       },
       { path: '', redirectTo: 'zones', pathMatch: 'full' }

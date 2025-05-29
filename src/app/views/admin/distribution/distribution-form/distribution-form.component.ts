@@ -4,14 +4,14 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ProgramacionDistribucionService, ProgramacionDistribucion, CreateProgramacionDTO } from '../../../../core/services/programacion-distribucion.service';
+import { ProgramacionDistribucionService, ProgramacionDistribucion, CreateProgramacionDTO } from '../../../../core/services/distribution.service';
 
 @Component({
-  selector: 'app-programacion-distribucion-form',
+  selector: 'app-distribucion-form',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
-  templateUrl: './programacion-distribucion-form.component.html',
-  styleUrls: ['./programacion-distribucion-form.component.css']
+  templateUrl: './distribution-form.component.html',
+  styleUrls: ['./distribution-form.component.css']
 })
 export class ProgramacionDistribucionFormComponent implements OnInit, OnChanges {
   @Input() editMode = false;

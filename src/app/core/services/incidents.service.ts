@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { IncidenciaResponse, Incidencia } from '../../core/models/incidencias'; // Importa tu interfaz
+import { IncidenciaResponse, Incidencia } from '../models/incidents'; // Importa tu interfaz
 
 @Injectable({
   providedIn: 'root'

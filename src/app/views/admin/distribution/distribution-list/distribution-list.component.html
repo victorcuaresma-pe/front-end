@@ -89,12 +89,12 @@
   <!-- Modal -->
   <div *ngIf="mostrarModal" class="modal-overlay" (click)="cerrarModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
-      <app-programacion-distribucion-form
-        [editMode]="editMode"
-        [programacionId]="editingId"
-        (guardado)="cerrarModal()"
-        (cerrar)="cerrarModal()">
-      </app-programacion-distribucion-form>
+      <app-distribucion-form
+          [editMode]="editMode"
+          [programacionId]="editingId"
+          (guardado)="cerrarModal()"
+          (cerrar)="cerrarModal()">
+        </app-distribucion-form>
     </div>
   </div>
 </div>
